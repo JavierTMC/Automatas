@@ -1,0 +1,65 @@
+static string FuncionTransicionDFA(List<Nodo> Directorio, List<int> input, int nodoChecando)
+        {
+            bool seRompio = false;
+
+            //recorrer todo el input, char por char
+            for (int i = 0; i < input.Count; i++)
+            {
+                //obtener el charinput en la posicion i
+                int charInput = Convert.ToInt32(input[i]);
+                //recorrer la lista de nodos
+                foreach (var itemDirectorio in Directorio)
+                {
+                    //si el nodo esta checando y esta activo
+                    if (itemDirectorio.identificador == nodoChecando && itemDirectorio.Activo == true)
+                    {
+                        //checar si el nodo tiene adyacentes o caminos para posibles recorridos
+                        if (itemDirectorio.ListaDeNodosAdyacentes.Count != 0)
+                        {
+                            //recorrer cada adyacente o posible camino
+                            for (int j = 0; j < itemDirectorio.ListaDeNodosAdyacentes.Count; j++)
+                            {
+                                if (itemDirectorio.ListaDeNodosAdyacentes[j].Activo == true && 
+                                    itemDirectorio.ListaDeNodosAdyacentes[j].Ponderacion == charInput)
+                                {
+                                    //cambiamos el nodoChecando al nodo con ponderacion igual
+                                    nodoChecando = itemDirectorio.ListaDeNodosAdyacentes[j].identificador;
+
+                                    seRompio = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    if (j == itemDirectorio.ListaDeNodosAdyacentes.Count -1)
+                                    {
+                                        return "Se murio el automata, no hay camino";
+                                    }
+                                }
+                            }// fin //recorrer cada adyacente o posible camino
+                        }
+                        else
+                        {
+                            //el nodo no tiene posibles caminos para recorrer.
+                            return "Se murio el automata, no hay camino";
+                        }
+                    }//fin nodo checando encontrado       
+                    if (seRompio)
+                    {
+                        seRompio = false;
+                        break;
+                    }
+                }
+            }// fin for input
+
+            foreach (var item in Directorio)
+            {
+                if (item.identificador == nodoChecando)
+                {
+                    if (item.EsAceptante)
+                    {
+                        return string.Format("Cadena Aceptada \n Identificador del Nodo: {0}",item.identificador.ToString());
+                    }                   
+                }  
+            }
+            return string.Format("La cadena no es aceptada por el automata");
+        }
